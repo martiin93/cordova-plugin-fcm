@@ -14,6 +14,7 @@
 - (void)onNotification:(CDVInvokedUrlCommand*)command;
 - (void)notifyOfMessage:(NSData*) payload;
 - (void)notifyOfTokenRefresh:(NSString*) token;
+- (void)logEvent:(CDVInvokedUrlCommand*)command;
 
 //#define AppDelegateSingleton ((AppDelegate *)[[UIApplication sharedApplication] delegate])
 

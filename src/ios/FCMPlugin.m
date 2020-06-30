@@ -18,7 +18,7 @@ static NSString *tokenRefreshCallback = @"FCMPlugin.onTokenRefreshReceived";
 static FCMPlugin *fcmPluginInstance;
 
 + (FCMPlugin *) fcmPlugin {
-    
+
     return fcmPluginInstance;
 }
 
@@ -27,16 +27,16 @@ static FCMPlugin *fcmPluginInstance;
     NSLog(@"Cordova view ready");
     fcmPluginInstance = self;
     [self.commandDelegate runInBackground:^{
-        
+
         CDVPluginResult* pluginResult = nil;
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
-    
+
 }
 
 // GET TOKEN //
-- (void) getToken:(CDVInvokedUrlCommand *)command 
+- (void) getToken:(CDVInvokedUrlCommand *)command
 {
     NSLog(@"get Token");
     [self.commandDelegate runInBackground:^{
@@ -48,7 +48,7 @@ static FCMPlugin *fcmPluginInstance;
 }
 
 // UN/SUBSCRIBE TOPIC //
-- (void) subscribeToTopic:(CDVInvokedUrlCommand *)command 
+- (void) subscribeToTopic:(CDVInvokedUrlCommand *)command
 {
     NSString* topic = [command.arguments objectAtIndex:0];
     NSLog(@"subscribe To Topic %@", topic);
@@ -60,7 +60,7 @@ static FCMPlugin *fcmPluginInstance;
     }];
 }
 
-- (void) unsubscribeFromTopic:(CDVInvokedUrlCommand *)command 
+- (void) unsubscribeFromTopic:(CDVInvokedUrlCommand *)command
 {
     NSString* topic = [command.arguments objectAtIndex:0];
     NSLog(@"unsubscribe From Topic %@", topic);
@@ -76,10 +76,10 @@ static FCMPlugin *fcmPluginInstance;
 - (void) onNotification:(CDVInvokedUrlCommand *)command
 {
     NSLog(@"onNotification:command");
-    
+
     //Tell our queue that we have registered the notification handler...
     [[FCMQueue sharedFCMQueue] setNotificationCallbackRegistered:YES];
-    
+
     CDVPluginResult* pluginResult = nil;
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -91,7 +91,7 @@ static FCMPlugin *fcmPluginInstance;
     NSString *JSONString = [[NSString alloc] initWithBytes:[payload bytes] length:[payload length] encoding:NSUTF8StringEncoding];
     NSString * notifyJS = [NSString stringWithFormat:@"%@(%@);", notificationCallback, JSONString];
     NSLog(@"stringByEvaluatingJavaScriptFromString %@", notifyJS);
-    
+
     if ([self.webView respondsToSelector:@selector(stringByEvaluatingJavaScriptFromString:)]) {
         [(UIWebView *)self.webView stringByEvaluatingJavaScriptFromString:notifyJS];
     } else {
@@ -103,12 +103,24 @@ static FCMPlugin *fcmPluginInstance;
 {
     NSString * notifyJS = [NSString stringWithFormat:@"%@('%@');", tokenRefreshCallback, token];
     NSLog(@"stringByEvaluatingJavaScriptFromString %@", notifyJS);
-    
+
     if ([self.webView respondsToSelector:@selector(stringByEvaluatingJavaScriptFromString:)]) {
         [(UIWebView *)self.webView stringByEvaluatingJavaScriptFromString:notifyJS];
     } else {
         [self.webViewEngine evaluateJavaScript:notifyJS completionHandler:nil];
     }
+}
+
+- (void) logEvent: (CDVInvokedUrlCommand *)command {
+    NSLog(@"logEvent");
+
+    NSString* name = [command.arguments objectAtIndex:0];
+    NSDictionary* parameters = [command.arguments objectAtIndex:1];
+
+    [FIRAnalytics logEventWithName:name parameters:parameters];
+
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 @end
