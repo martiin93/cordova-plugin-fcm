@@ -41,6 +41,11 @@ FCMPlugin.prototype.logEvent = function(eventName, eventParams, success, error){
 	exec(success, error, 'FCMPlugin', 'logEvent', [eventName, eventParams || {}]);
 }
 
+FCMPlugin.prototype.setCurrentScreen = function(name, success, error) {
+	console.log("setCurrentScreen " + name )
+	exec(success, error, 'FCMPlugin', "setCurrentScreen", [name]);
+}
+
 // FIRE READY //
 exec(function(result){ console.log("FCMPlugin Ready OK") }, function(result){ console.log("FCMPlugin Ready ERROR") }, "FCMPlugin",'ready',[]);
 

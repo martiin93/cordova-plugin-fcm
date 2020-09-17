@@ -114,6 +114,19 @@ public class FCMPlugin extends CordovaPlugin {
 					}
 				});
                         }
+			else if (action.equals("setCurrentScreen")) {
+				cordova.getActivity().runOnUiThread(new Runnable() {
+				public void run() {
+					try{
+					setCurrentScreen(callbackContext, args.getString(0));
+						callbackContext.success();
+					}catch(Exception e){
+						callbackContext.error(e.getMessage());
+					}
+				}
+			});
+
+			}
 			else{
 				callbackContext.error("Method not found");
 				return false;
@@ -198,6 +211,21 @@ public class FCMPlugin extends CordovaPlugin {
 			}
 		});
 	}
+
+    public void setCurrentScreen(final CallbackContext callbackContext, final String screenName) {
+		cordova.getActivity().runOnUiThread(new Runnable() {
+			public void run() {
+			try {
+     		   mFirebaseAnalytics.setCurrentScreen(cordova.getActivity(),screenName, null);
+				callbackContext.success();
+			} catch (Exception e) {
+				callbackContext.error(e.getMessage());
+			}
+			}
+		});
+    }
+
+
 
 
   @Override
